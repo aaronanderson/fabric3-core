@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 
 import junit.framework.TestCase;
+
 import org.easymock.EasyMock;
 import org.fabric3.implementation.bytecode.proxy.common.ProxyFactoryImpl;
+import org.fabric3.implementation.bytecode.proxy.wire.WireProxyDispatcher.WireProxyDispatcherImpl;
 import org.fabric3.spi.classloader.ClassLoaderRegistry;
 import org.fabric3.spi.container.invocation.Message;
 import org.fabric3.spi.container.invocation.MessageImpl;
@@ -32,7 +34,7 @@ public class WireProxyDispatcherTestCase extends TestCase {
         EasyMock.expect(interceptor.invoke(EasyMock.isA(Message.class))).andReturn(message);
         EasyMock.replay(chain, interceptor);
 
-        ProxyInterface proxy = factory.createProxy(URI, ProxyInterface.class, methods, WireProxyDispatcher.class, true);
+        ProxyInterface proxy = factory.createProxy(URI, ProxyInterface.class, methods, WireProxyDispatcher.class, WireProxyDispatcherImpl.class, true);
         ((WireProxyDispatcher) proxy).init(ProxyInterface.class, null, chains);
         assertEquals("test", proxy.invoke("test"));
 
@@ -47,7 +49,7 @@ public class WireProxyDispatcherTestCase extends TestCase {
         EasyMock.expect(interceptor.invoke(EasyMock.isA(Message.class))).andReturn(message);
         EasyMock.replay(chain, interceptor);
 
-        FaultProxyInterface proxy = factory.createProxy(URI, FaultProxyInterface.class, methods, WireProxyDispatcher.class, true);
+        FaultProxyInterface proxy = factory.createProxy(URI, FaultProxyInterface.class, methods, WireProxyDispatcher.class, WireProxyDispatcherImpl.class, true);
         ((WireProxyDispatcher) proxy).init(ProxyInterface.class, null, chains);
 
         try {

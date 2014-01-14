@@ -39,6 +39,7 @@ package org.fabric3.implementation.bytecode.proxy.wire;
 
 import java.util.Map;
 
+import org.fabric3.implementation.bytecode.proxy.common.ProxyDispatcher;
 import org.fabric3.spi.container.invocation.CallbackReference;
 import org.fabric3.spi.container.invocation.WorkContext;
 import org.fabric3.spi.container.invocation.WorkContextCache;
@@ -51,9 +52,8 @@ import org.fabric3.spi.container.wire.InvocationChain;
  * service based on the current callback reference. For example, if clients A and A' implementing the same callback interface C invoke B, the callback proxy
  * representing C must correctly dispatch back to A and A'. This is done by recording the callback URI as the forward invoke is made.
  */
-public class CallbackDispatcher extends AbstractCallbackDispatcher {
-    private Map<String, InvocationChain[]> mappings;
-
+public interface CallbackDispatcher extends ProxyDispatcher {
+   
     /**
      * In multi-threaded instances such as composite scoped components, multiple forward invocations may be received simultaneously. As a result, since callback
      * proxies stored in instance variables may represent multiple clients, they must map the correct one for the request being processed on the current thread.
@@ -61,19 +61,29 @@ public class CallbackDispatcher extends AbstractCallbackDispatcher {
      *
      * @param mappings the callback URI to invocation chain mappings
      */
-    public void init(Map<String, InvocationChain[]> mappings) {
-        this.mappings = mappings;
-    }
+    public void init(Map<String, InvocationChain[]> mappings);
 
-    public Object _f3_invoke(int i, Object args) throws Throwable {
-        WorkContext workContext = WorkContextCache.getThreadWorkContext();
-        CallbackReference callbackReference = workContext.peekCallbackReference();
-        String callbackUri = callbackReference.getServiceUri();
+    
+    
+    
+    public static class CallbackDispatcherImpl implements CallbackDispatcher {
+        private Map<String, InvocationChain[]> mappings;
 
-        // find the callback invocation chain for the invoked operation
-        InvocationChain[] chains = mappings.get(callbackUri);
-        InvocationChain chain = chains[i];
-        return super.invoke(chain, args, workContext);
+        public void init(Map<String, InvocationChain[]> mappings) {
+            this.mappings = mappings;
+        }
+
+        public Object _f3_invoke(int i, Object args) throws Throwable {
+            WorkContext workContext = WorkContextCache.getThreadWorkContext();
+            CallbackReference callbackReference = workContext.peekCallbackReference();
+            String callbackUri = callbackReference.getServiceUri();
+
+            // find the callback invocation chain for the invoked operation
+            InvocationChain[] chains = mappings.get(callbackUri);
+            InvocationChain chain = chains[i];
+            return AbstractCallbackDispatcher.invoke(chain, args, workContext);
+        }
+
     }
 
 }

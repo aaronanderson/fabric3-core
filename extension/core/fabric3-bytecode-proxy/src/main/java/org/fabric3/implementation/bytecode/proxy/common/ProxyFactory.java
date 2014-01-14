@@ -52,15 +52,16 @@ public interface ProxyFactory {
      * Creates a proxy.
      *
      * @param classLoaderKey the key of the classloader the proxy is to be created for
-     * @param interfaze      the proxy interface
+     * @param type      	 the interface or class to be proxied
      * @param methods        the sorted list of proxy methods. If multiple proxies are created for a classloader, method order must be the same as proxy
      *                       bytecode is cached.
-     * @param dispatcher     the dispatcher the proxy extends
+     * @param dispatcherInt  the dispatcher interface the proxy implements
+     * @param dispatcherTmpl the dispatcher class that contains the implemented interface methods that should be copy to the proxy
      * @param wrapped        true if parameters should be wrapped in an array as JDK proxy invocations are
      * @return the proxy instance, which extends the provided dispatcher class
      * @throws ProxyException if there is an error creating the proxy
      */
-    <T> T createProxy(URI classLoaderKey, Class<T> interfaze, Method[] methods, Class<? extends ProxyDispatcher> dispatcher, boolean wrapped)
+    <T,D extends ProxyDispatcher> T createProxy(URI classLoaderKey, Class<T> type, Method[] methods,  Class<D> dispatcherInt, Class<? extends D> dispatcherTmpl, boolean wrapped)
             throws ProxyException;
 
 }

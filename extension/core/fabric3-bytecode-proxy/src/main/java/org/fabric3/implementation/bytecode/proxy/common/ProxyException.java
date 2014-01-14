@@ -45,6 +45,10 @@ import org.fabric3.api.host.Fabric3Exception;
  */
 public class ProxyException extends Fabric3Exception {
 
+	public ProxyException(String message) {
+        super(message);
+    }
+	
     public ProxyException(Throwable cause) {
         super(cause);
     }

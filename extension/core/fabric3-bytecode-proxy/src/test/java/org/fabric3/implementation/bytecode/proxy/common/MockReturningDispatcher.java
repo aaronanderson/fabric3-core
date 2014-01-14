@@ -38,12 +38,16 @@
  */
 package org.fabric3.implementation.bytecode.proxy.common;
 
-public class MockReturningDispatcher implements ProxyDispatcher {
+public interface MockReturningDispatcher extends ProxyDispatcher {
 
-    public Object _f3_invoke(int index, Object args) throws Throwable {
-        return "test";
+    public static class MockReturningDispatcherImpl implements MockReturningDispatcher {
+
+        public Object _f3_invoke(int index, Object args) throws Throwable {
+            return "test";
+
+        }
+
 
     }
-
 
 }

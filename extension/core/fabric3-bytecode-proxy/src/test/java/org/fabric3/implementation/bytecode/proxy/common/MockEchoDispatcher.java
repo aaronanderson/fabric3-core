@@ -38,11 +38,5 @@
  */
 package org.fabric3.implementation.bytecode.proxy.common;
 
-public class MockEchoDispatcher implements ProxyDispatcher {
-
-    public Object _f3_invoke(int index, Object args) throws Throwable {
-        return ((Object[]) args)[0];
-
-    }
-
+public interface MockEchoDispatcher extends ProxyDispatcher {
 }

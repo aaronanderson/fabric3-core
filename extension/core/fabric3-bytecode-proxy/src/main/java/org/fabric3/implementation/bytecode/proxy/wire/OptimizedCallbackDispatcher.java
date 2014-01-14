@@ -37,6 +37,7 @@
 */
 package org.fabric3.implementation.bytecode.proxy.wire;
 
+import org.fabric3.implementation.bytecode.proxy.common.ProxyDispatcher;
 import org.fabric3.spi.container.invocation.WorkContext;
 import org.fabric3.spi.container.invocation.WorkContextCache;
 import org.fabric3.spi.container.wire.InvocationChain;
@@ -44,19 +45,26 @@ import org.fabric3.spi.container.wire.InvocationChain;
 /**
  * Responsible for dispatching to a callback invocation from a stateless component or component with only one callback client..
  */
-public class OptimizedCallbackDispatcher extends AbstractCallbackDispatcher {
-    private InvocationChain[] chains;
+public interface OptimizedCallbackDispatcher extends ProxyDispatcher{
+   
+    public void init(InvocationChain[] chains) ;
+    
+    
+    public static class OptimizedCallbackDispatcherImpl implements OptimizedCallbackDispatcher {
+        private InvocationChain[] chains;
 
-    public void init(InvocationChain[] chains) {
-        this.chains = chains;
-    }
+        public void init(InvocationChain[] chains) {
+            this.chains = chains;
+        }
 
-    public Object _f3_invoke(int i, Object args) throws Throwable {
-        WorkContext workContext = WorkContextCache.getThreadWorkContext();
-        // find the invocation chain for the invoked operation
-        InvocationChain chain = chains[i];
-        // find the invocation chain for the invoked operation
-        return super.invoke(chain, args, workContext);
+        public Object _f3_invoke(int i, Object args) throws Throwable {
+            WorkContext workContext = WorkContextCache.getThreadWorkContext();
+            // find the invocation chain for the invoked operation
+            InvocationChain chain = chains[i];
+            // find the invocation chain for the invoked operation
+            return AbstractCallbackDispatcher.invoke(chain, args, workContext);
+        }
+
     }
 
 }

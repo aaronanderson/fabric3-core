@@ -40,11 +40,15 @@ package org.fabric3.implementation.bytecode.proxy.common;
 
 import java.io.IOException;
 
-public class MockCheckedExceptionDispatcher implements ProxyDispatcher {
+public interface MockCheckedExceptionDispatcher extends ProxyDispatcher {
+    
+    public static class MockCheckedExceptionDispatcherImpl implements MockCheckedExceptionDispatcher {
 
-    public Object _f3_invoke(int index, Object args) throws Throwable {
-        throw new IOException();
+        public Object _f3_invoke(int index, Object args) throws Throwable {
+            throw new IOException();
+        }
+
+
     }
-
 
 }

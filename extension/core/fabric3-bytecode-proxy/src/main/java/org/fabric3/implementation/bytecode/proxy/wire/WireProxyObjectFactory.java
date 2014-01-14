@@ -43,6 +43,7 @@ import java.net.URI;
 
 import org.fabric3.implementation.bytecode.proxy.common.ProxyException;
 import org.fabric3.implementation.bytecode.proxy.common.ProxyFactory;
+import org.fabric3.implementation.bytecode.proxy.wire.WireProxyDispatcher.WireProxyDispatcherImpl;
 import org.fabric3.spi.container.objectfactory.ObjectCreationException;
 import org.fabric3.spi.container.objectfactory.ObjectFactory;
 import org.fabric3.spi.container.wire.InvocationChain;
@@ -73,7 +74,7 @@ public class WireProxyObjectFactory<T> implements ObjectFactory<T> {
     public T getInstance() throws ObjectCreationException {
         try {
             if (proxy == null) {
-                proxy = proxyFactory.createProxy(uri, interfaze, methods, WireProxyDispatcher.class, true);
+                proxy = proxyFactory.createProxy(uri, interfaze, methods, WireProxyDispatcher.class,WireProxyDispatcherImpl.class, true);
                 WireProxyDispatcher dispatcher = (WireProxyDispatcher) proxy;
                 dispatcher.init(interfaze, callbackUri, chains);
             }

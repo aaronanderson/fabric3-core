@@ -53,79 +53,86 @@ import org.oasisopen.sca.ServiceUnavailableException;
 /**
  * Dispatches from a proxy to a wire.
  */
-public class WireProxyDispatcher<B> implements ProxyDispatcher, ServiceReference<B> {
-    private static final long serialVersionUID = -3766594738137530257L;
+public interface WireProxyDispatcher<B> extends ProxyDispatcher, ServiceReference<B> {
+    
+    public void init(Class<B> interfaze, String callbackUri, InvocationChain[] chains);
+        
+    public static class WireProxyDispatcherImpl<B> implements WireProxyDispatcher<B> {
+        private static final long serialVersionUID = -3766594738137530257L;
 
-    private Class<B> interfaze;
-    private String callbackUri;
-    private transient InvocationChain[] chains;
+        private Class<B> interfaze;
+        private String callbackUri;
+        private transient InvocationChain[] chains;
 
-    public void init(Class<B> interfaze, String callbackUri, InvocationChain[] chains) {
-        this.interfaze = interfaze;
-        this.callbackUri = callbackUri;
-        this.chains = chains;
-    }
-
-    public B getService() {
-        throw new UnsupportedOperationException();
-    }
-
-    public Class<B> getBusinessInterface() {
-        return interfaze;
-    }
-
-    public Object _f3_invoke(int index, Object args) throws Throwable {
-        InvocationChain chain = chains[index];
-
-        Interceptor headInterceptor = chain.getHeadInterceptor();
-
-        WorkContext workContext = WorkContextCache.getThreadWorkContext();
-
-        if (callbackUri != null) {
-            initializeCallbackReference(workContext);
+        public void init(Class<B> interfaze, String callbackUri, InvocationChain[] chains) {
+            this.interfaze = interfaze;
+            this.callbackUri = callbackUri;
+            this.chains = chains;
         }
 
-        Message message = MessageCache.getAndResetMessage();
-        message.setBody(args);
-        message.setWorkContext(workContext);
-        try {
-            // dispatch the invocation down the chain and get the response
-            Message response;
-            try {
-                response = headInterceptor.invoke(message);
-            } catch (ServiceUnavailableException e) {
-                // simply rethrow ServiceUnavailableExceptions
-                throw e;
-            } catch (ServiceRuntimeException e) {
-                // simply rethrow ServiceRuntimeException
-                throw e;
-            } catch (RuntimeException e) {
-                // wrap other exceptions raised by the runtime
-                throw new ServiceUnavailableException(e);
-            }
+        public B getService() {
+            throw new UnsupportedOperationException();
+        }
 
-            // handle response from the application, returning or throwing an exception as appropriate
-            Object body = response.getBody();
-            boolean fault = response.isFault();
+        public Class<B> getBusinessInterface() {
+            return interfaze;
+        }
 
-            if (fault) {
-                throw (Throwable) body;
-            } else {
-                return body;
-            }
-        } finally {
+        public Object _f3_invoke(int index, Object args) throws Throwable {
+            InvocationChain chain = chains[index];
+
+            Interceptor headInterceptor = chain.getHeadInterceptor();
+
+            WorkContext workContext = WorkContextCache.getThreadWorkContext();
+
             if (callbackUri != null) {
-                // no callback reference was created as the wire is unidrectional
-                workContext.popCallbackReference();
+                initializeCallbackReference(workContext);
             }
-            message.reset();
+
+            Message message = MessageCache.getAndResetMessage();
+            message.setBody(args);
+            message.setWorkContext(workContext);
+            try {
+                // dispatch the invocation down the chain and get the response
+                Message response;
+                try {
+                    response = headInterceptor.invoke(message);
+                } catch (ServiceUnavailableException e) {
+                    // simply rethrow ServiceUnavailableExceptions
+                    throw e;
+                } catch (ServiceRuntimeException e) {
+                    // simply rethrow ServiceRuntimeException
+                    throw e;
+                } catch (RuntimeException e) {
+                    // wrap other exceptions raised by the runtime
+                    throw new ServiceUnavailableException(e);
+                }
+
+                // handle response from the application, returning or throwing an exception as appropriate
+                Object body = response.getBody();
+                boolean fault = response.isFault();
+
+                if (fault) {
+                    throw (Throwable) body;
+                } else {
+                    return body;
+                }
+            } finally {
+                if (callbackUri != null) {
+                    // no callback reference was created as the wire is unidrectional
+                    workContext.popCallbackReference();
+                }
+                message.reset();
+            }
+
+        }
+
+        private void initializeCallbackReference(WorkContext workContext) {
+            CallbackReference callbackReference = new CallbackReference(callbackUri, null);
+            workContext.addCallbackReference(callbackReference);
         }
 
     }
 
-    private void initializeCallbackReference(WorkContext workContext) {
-        CallbackReference callbackReference = new CallbackReference(callbackUri, null);
-        workContext.addCallbackReference(callbackReference);
-    }
 
 }

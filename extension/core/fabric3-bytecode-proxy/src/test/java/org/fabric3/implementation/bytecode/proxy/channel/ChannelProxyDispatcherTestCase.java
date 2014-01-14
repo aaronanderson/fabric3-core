@@ -39,7 +39,9 @@
 package org.fabric3.implementation.bytecode.proxy.channel;
 
 import junit.framework.TestCase;
+
 import org.easymock.EasyMock;
+import org.fabric3.implementation.bytecode.proxy.channel.ChannelProxyDispatcher.ChannelProxyDispatcherImpl;
 import org.fabric3.spi.container.channel.EventStreamHandler;
 
 /**
@@ -53,7 +55,7 @@ public class ChannelProxyDispatcherTestCase extends TestCase {
 
         EasyMock.replay(handler);
 
-        ChannelProxyDispatcher dispatcher = new ChannelProxyDispatcher();
+        ChannelProxyDispatcher dispatcher = new ChannelProxyDispatcherImpl();
         dispatcher.init(handler);
 
         dispatcher._f3_invoke(0, "test");

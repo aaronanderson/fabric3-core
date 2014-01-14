@@ -44,6 +44,8 @@ import java.util.Map;
 
 import org.fabric3.implementation.bytecode.proxy.common.ProxyException;
 import org.fabric3.implementation.bytecode.proxy.common.ProxyFactory;
+import org.fabric3.implementation.bytecode.proxy.wire.CallbackDispatcher.CallbackDispatcherImpl;
+import org.fabric3.implementation.bytecode.proxy.wire.OptimizedCallbackDispatcher.OptimizedCallbackDispatcherImpl;
 import org.fabric3.spi.container.objectfactory.ObjectCreationException;
 import org.fabric3.spi.container.objectfactory.ObjectFactory;
 import org.fabric3.spi.container.wire.InvocationChain;
@@ -86,11 +88,12 @@ public class CallbackWireObjectFactory<T> implements ObjectFactory<T> {
                                                                                                                 interfaze,
                                                                                                                 methods,
                                                                                                                 OptimizedCallbackDispatcher.class,
+                                                                                                                OptimizedCallbackDispatcherImpl.class,
                                                                                                                 true);
                 dispatcher.init(chains.values().iterator().next());
                 return interfaze.cast(dispatcher);
             } else {
-                CallbackDispatcher dispatcher = (CallbackDispatcher) proxyFactory.createProxy(uri, interfaze, methods, CallbackDispatcher.class, true);
+                CallbackDispatcher dispatcher = (CallbackDispatcher) proxyFactory.createProxy(uri, interfaze, methods, CallbackDispatcher.class,CallbackDispatcherImpl.class, true);
                 dispatcher.init(chains);
                 return interfaze.cast(dispatcher);
             }

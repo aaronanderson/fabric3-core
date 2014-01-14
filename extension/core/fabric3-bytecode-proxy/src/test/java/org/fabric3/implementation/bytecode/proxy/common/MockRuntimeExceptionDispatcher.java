@@ -40,11 +40,13 @@ package org.fabric3.implementation.bytecode.proxy.common;
 
 import org.oasisopen.sca.ServiceRuntimeException;
 
-public class MockRuntimeExceptionDispatcher implements ProxyDispatcher {
+public interface MockRuntimeExceptionDispatcher extends ProxyDispatcher {
 
-    public Object _f3_invoke(int index, Object args) throws Throwable {
-        throw new ServiceRuntimeException();
+    public static class MockRuntimeExceptionDispatcherImpl implements MockRuntimeExceptionDispatcher {
+
+        public Object _f3_invoke(int index, Object args) throws Throwable {
+            throw new ServiceRuntimeException();
+        }
+
     }
-
-
 }

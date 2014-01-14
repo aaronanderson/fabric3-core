@@ -52,7 +52,7 @@ import org.oasisopen.sca.ServiceUnavailableException;
  */
 public abstract class AbstractCallbackDispatcher implements ProxyDispatcher {
 
-    protected Object invoke(InvocationChain chain, Object args, WorkContext workContext) throws Throwable {
+    protected static Object invoke(InvocationChain chain, Object args, WorkContext workContext) throws Throwable {
         // Pop the callback reference as we move back in the request stack. When the invocation is made on the callback target, the same call callback reference
         // state will be present as existed when the initial forward request to this proxy's instance was dispatched to. Consequently,
         // CallbackReference#getForwardCorrelaltionId() will return the correlation id for the callback target.
